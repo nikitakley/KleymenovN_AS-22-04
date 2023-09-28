@@ -33,6 +33,19 @@ int check_int(int& int_data)
 	return int_data;
 }
 
+int check_input(int& input_data)
+{
+	cin >> input_data;
+	while (cin.fail() || cin.peek() != '\n' || input_data < 0 || input_data > 7)
+	{
+		cin.clear();
+		cin.ignore(10000, '\n');
+		cout << "\nError of data input! Please, try again: ";
+		cin >> input_data;
+	}
+	return input_data;
+}
+
 double check_double(double& double_data)
 {
 	cin >> double_data;
@@ -88,7 +101,7 @@ Pipe AddPipe()
 	return new_pipe;
 }
 
-void PrintAddPipe(Pipe new_pipe)
+void PrintAddPipe(Pipe& new_pipe)
 {
 	cout << endl << "Info about your pipe..." << endl;
 	if (new_pipe.pipe_name == "None")
@@ -138,7 +151,7 @@ Station AddStation()
 	return new_station;
 }
 
-void PrintAddStation(Station new_station)
+void PrintAddStation(Station& new_station)
 {
 	cout << endl << "Info about your CS..." << endl;
 	if (new_station.station_name == "None")
@@ -173,7 +186,7 @@ void EditStation(Station& new_station)
 	PrintAddStation(new_station);
 }
 
-void FileRecord(Pipe pipe_data, Station station_data)
+void FileRecord(Pipe& pipe_data, Station& station_data)
 {
 	ofstream fout("info");
 	if (pipe_data.pipe_name == "None")
@@ -278,14 +291,14 @@ int main()
 		cout << "7) Download" << endl;
 		cout << "0) Exit" << endl;
 		cout << endl << "Please, enter the command number: ";
-		cin >> num;
-		if (cin.fail() || num < 0 || num > 7)
-		{
-			cout << "There is no such command, please, try again" << endl;
-			cin.clear();
-			cin.ignore(1000, '\n');
-			continue;
-		}
+		check_input(num);
+		//if (cin.fail() || num < 0 || num > 7)
+		//{
+		//	cout << "There is no such command, please, try again" << endl;
+		//	cin.clear();
+		//	cin.ignore(1000, '\n');
+		//	continue;
+		//}
 		switch (num)
 		{
 		case 1:
