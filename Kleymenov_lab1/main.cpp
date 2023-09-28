@@ -46,6 +46,19 @@ double check_double(double& double_data)
 	return double_data;
 }
 
+double check2_double(double& efficiency_data)
+{
+	cin >> efficiency_data;
+	while (cin.fail() || cin.peek() != '\n' || (efficiency_data < 0.0) || (efficiency_data > 1.0))
+	{
+		cin.clear();
+		cin.ignore(100000, '\n');
+		cout << "\nPlease, enter a efficiency data from 0.0 to 1.0\n";
+		cin >> efficiency_data;
+	}
+	return efficiency_data;
+}
+
 bool check_bool(bool& bool_data)
 {
 	cin >> bool_data;
@@ -121,7 +134,7 @@ Station AddStation()
 		check_int(new_station.station_act_workshops);
 	}
 	cout << "Enter the station efficiency indicator (from 0 to 1 with tenths): ";
-	check_double(new_station.station_efficiency);
+	check2_double(new_station.station_efficiency);
 	return new_station;
 }
 
@@ -266,6 +279,13 @@ int main()
 		cout << "0) Exit" << endl;
 		cout << endl << "Please, enter the command number: ";
 		cin >> num;
+		if (cin.fail() || num < 0 || num > 7)
+		{
+			cout << "There is no such command, please, try again" << endl;
+			cin.clear();
+			cin.ignore(1000, '\n');
+			continue;
+		}
 		switch (num)
 		{
 		case 1:
@@ -314,6 +334,7 @@ int main()
 		default:
 		{
 			cout << endl << "There is no such command, please, try again" << endl;
+			break;
 		}
 		}
 	}
