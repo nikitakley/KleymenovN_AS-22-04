@@ -1,190 +1,141 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-
+#include <unordered_map>
+#include "Pipe.h"
+#include "Station.h"
 using namespace std;
 
-struct Pipe
-{
-	string pipe_name = "None";
-	double pipe_length = 0.0;
-	int pipe_diameter = 0;
-	bool pipe_repair = false;
-};
+//struct Pipe
+//{
+//	string pipe_name = "None";
+//	double pipe_length = 0.0;
+//	int pipe_diameter = 0;
+//	bool pipe_repair = false;
+//};
 
-struct Station
-{
-	string station_name = "None";
-	int station_workshops = 0;
-	int station_act_workshops = 0;
-	double station_efficiency = 0.0;
-};
+//struct Station
+//{
+//	string station_name = "None";
+//	int station_workshops = 0;
+//	int station_act_workshops = 0;
+//	double station_efficiency = 0.0;
+//};
 
-int check_int(int& int_data)
+template <typename T>
+T GetCorrectData(T min, T max)
 {
-	cin >> int_data;
-	while (cin.fail() || cin.peek() != '\n' || int_data <= 0)
+	T x;
+	while ((cin >> x).fail() || cin.peek() != '\n' || x < min || x > max)
 	{
 		cin.clear();
 		cin.ignore(100000, '\n');
-		cout << "\nPlease, enter an integer data type greater than 0\n";
-		cin >> int_data;
+		cout << "\nPlease, enter the correct data! Data must be in the range [" << min << " - " << max << "]";
+		cout << "\nEnter: ";
 	}
-	return int_data;
+	return x;
 }
 
-int check_input(int& input_data)
-{
-	cin >> input_data;
-	while (cin.fail() || cin.peek() != '\n' || input_data < 0 || input_data > 7)
-	{
-		cin.clear();
-		cin.ignore(10000, '\n');
-		cout << "\nError of data input! Please, try again: ";
-		cin >> input_data;
-	}
-	return input_data;
-}
+//Pipe AddPipe()
+//{
+//	Pipe new_pipe;
+//	cout << endl << "Adding a new pipe..." << endl;
+//	cout << "Enter the name of the pipe: ";
+//	cin.ignore();
+//	getline(cin, new_pipe.pipe_name);
+//	cout << "Enter the length of the pipe (in metres): ";
+//	new_pipe.pipe_length = GetCorrectData(100.0, 1200.0);
+//	cout << "Enter the pipe diameter (in millimetres): ";
+//	new_pipe.pipe_diameter = GetCorrectData(75, 1600);
+//	cout << "Enter the repair status: ";
+//	new_pipe.pipe_repair = GetCorrectData(0, 1);
+//	return new_pipe;
+//}
 
-double check_double(double& double_data)
-{
-	cin >> double_data;
-	while (cin.fail() || cin.peek() != '\n' || double_data <= 0)
-	{
-		cin.clear();
-		cin.ignore(100000, '\n');
-		cout << "\nPlease, enter a double data type greater than 0\n";
-		cin >> double_data;
-	}
-	return double_data;
-}
+//void PrintAddPipe(Pipe& new_pipe)
+//{
+//	cout << endl << "Info about your pipe..." << endl;
+//	if (new_pipe.pipe_name == "None")
+//	{
+//		cout << "No pipes available!\n";
+//	}
+//	else
+//	{
+//		cout << "Name: " << new_pipe.pipe_name << "\tLength: " << new_pipe.pipe_length
+//			<< "\tDiameter: " << new_pipe.pipe_diameter << "\tRepair: " << new_pipe.pipe_repair << endl;
+//	}
+//}
 
-double check2_double(double& efficiency_data)
-{
-	cin >> efficiency_data;
-	while (cin.fail() || cin.peek() != '\n' || (efficiency_data < 0.0) || (efficiency_data > 1.0))
-	{
-		cin.clear();
-		cin.ignore(100000, '\n');
-		cout << "\nPlease, enter a efficiency data from 0.0 to 1.0\n";
-		cin >> efficiency_data;
-	}
-	return efficiency_data;
-}
+//void RepairPipe(Pipe& new_pipe)
+//{
+//	if (new_pipe.pipe_name == "None")
+//	{
+//		cout << "No pipes available!\n";
+//	}
+//	else
+//	{
+//		new_pipe.pipe_repair = !new_pipe.pipe_repair;
+//		cout << endl << "You have changed repair status!";
+//		PrintAddPipe(new_pipe);
+//	}
+//}
 
-bool check_bool(bool& bool_data)
-{
-	cin >> bool_data;
-	while (cin.fail() || cin.peek() != '\n')
-	{
-		cin.clear();
-		cin.ignore(100000, '\n');
-		cout << "\nPlease, enter a boolean data type\n";
-		cin >> bool_data;
-	}
-	return bool_data;
-}
+//Station AddStation()
+//{
+//	Station new_station;
+//	cout << endl << "Adding a new CS..." << endl;
+//	cout << "Enter the station name: ";
+//	cin.ignore();
+//	getline(cin, new_station.station_name);
+//	cout << "Enter the number of workshops: ";
+//	new_station.station_workshops = GetCorrectData(1, 12);
+//	cout << "Enter the number of active workshops: ";
+//	new_station.station_act_workshops = GetCorrectData(1, 12);
+//	while (new_station.station_act_workshops > new_station.station_workshops)
+//	{
+//		cout << "The number of active workshops cannot be greater than those available!\n";
+//		cout << "Enter the number of active workshops: ";
+//		new_station.station_act_workshops = GetCorrectData(1, 12);
+//	}
+//	cout << "Enter the station efficiency indicator (from 0 to 1 with tenths): ";
+//	new_station.station_efficiency = GetCorrectData(0.0, 1.0);
+//	return new_station;
+//}
 
-Pipe AddPipe()
-{
-	Pipe new_pipe;
-	cout << endl << "Adding a new pipe..." << endl;
-	cout << "Enter the name of the pipe: ";
-	cin.ignore();
-	getline(cin, new_pipe.pipe_name);
-	cout << "Enter the length of the pipe (in metres): ";
-	check_double(new_pipe.pipe_length);
-	cout << "Enter the pipe diameter (in millimetres): ";
-	check_int(new_pipe.pipe_diameter);
-	cout << "Enter the repair status: ";
-	check_bool(new_pipe.pipe_repair);
-	return new_pipe;
-}
+//void PrintAddStation(Station& new_station)
+//{
+//	cout << endl << "Info about your CS..." << endl;
+//	if (new_station.station_name == "None")
+//	{
+//		cout << "No stations available!\n";
+//	}
+//	else
+//	{
+//		cout << "Name: " << new_station.station_name << "\tWorkshops: " << new_station.station_workshops
+//			<< "\tActive workshops: " << new_station.station_act_workshops << "\tEfficiency: "
+//			<< new_station.station_efficiency << endl;
+//	}
+//}
 
-void PrintAddPipe(Pipe& new_pipe)
-{
-	cout << endl << "Info about your pipe..." << endl;
-	if (new_pipe.pipe_name == "None")
-	{
-		cout << "No pipes available!\n";
-	}
-	else
-	{
-		cout << "Name: " << new_pipe.pipe_name << "\tLength: " << new_pipe.pipe_length
-			<< "\tDiameter: " << new_pipe.pipe_diameter << "\tRepair: " << new_pipe.pipe_repair << endl;
-	}
-}
-
-void RepairPipe(Pipe& new_pipe)
-{
-	if (new_pipe.pipe_name == "None")
-	{
-		cout << "No pipes available!\n";
-	}
-	else
-	{
-		new_pipe.pipe_repair = !new_pipe.pipe_repair;
-		cout << endl << "You have changed repair status!";
-		PrintAddPipe(new_pipe);
-	}
-}
-
-Station AddStation()
-{
-	Station new_station;
-	cout << endl << "Adding a new CS..." << endl;
-	cout << "Enter the station name: ";
-	cin.ignore();
-	getline(cin, new_station.station_name);
-	cout << "Enter the number of workshops: ";
-	check_int(new_station.station_workshops);
-	cout << "Enter the number of active workshops: ";
-	check_int(new_station.station_act_workshops);
-	while (new_station.station_act_workshops > new_station.station_workshops)
-	{
-		cout << "The number of active workshops cannot be greater than those available!\n";
-		cout << "Enter the number of active workshops: ";
-		check_int(new_station.station_act_workshops);
-	}
-	cout << "Enter the station efficiency indicator (from 0 to 1 with tenths): ";
-	check2_double(new_station.station_efficiency);
-	return new_station;
-}
-
-void PrintAddStation(Station& new_station)
-{
-	cout << endl << "Info about your CS..." << endl;
-	if (new_station.station_name == "None")
-	{
-		cout << "No stations available!\n";
-	}
-	else
-	{
-		cout << "Name: " << new_station.station_name << "\tWorkshops: " << new_station.station_workshops
-			<< "\tActive workshops: " << new_station.station_act_workshops << "\tEfficiency: "
-			<< new_station.station_efficiency << endl;
-	}
-}
-
-void EditStation(Station& new_station)
-{
-	if (new_station.station_name == "None")
-	{
-		cout << "No stations available!\n";
-	}
-	else
-	{
-		cout << "Enter the number of active workshops: ";
-		check_int(new_station.station_act_workshops);
-		while (new_station.station_act_workshops > new_station.station_workshops)
-		{
-			cout << "The number of active workshops cannot be greater than those available!\n";
-			cout << "Enter the number of active workshops: ";
-			check_int(new_station.station_act_workshops);
-		}
-	}
-	PrintAddStation(new_station);
-}
+//void EditStation(Station& new_station)
+//{
+//	if (new_station.station_name == "None")
+//	{
+//		cout << "No stations available!\n";
+//	}
+//	else
+//	{
+//		cout << "Enter the number of active workshops: ";
+//		new_station.station_act_workshops = GetCorrectData(1, 12);
+//		while (new_station.station_act_workshops > new_station.station_workshops)
+//		{
+//			cout << "The number of active workshops cannot be greater than those available!\n";
+//			cout << "Enter the number of active workshops: ";
+//			new_station.station_act_workshops = GetCorrectData(1, 12);
+//		}
+//	}
+//	PrintAddStation(new_station);
+//}
 
 void FileRecord(Pipe& pipe_data, Station& station_data)
 {
@@ -275,10 +226,79 @@ void FileOutput(Pipe& pipe_data, Station& station_data)
 	}
 }
 
+istream& operator << (istream& in, Pipe& new_pipe)
+{
+	cout << endl << "Adding a new pipe..." << endl;
+	cout << "Enter the name of the pipe: ";
+	in.ignore();
+	getline(in, new_pipe.pipe_name);
+	cout << "Enter the length of the pipe (in metres): ";
+	new_pipe.pipe_length = GetCorrectData(100.0, 1200.0);
+	cout << "Enter the pipe diameter (in millimetres): ";
+	new_pipe.pipe_diameter = GetCorrectData(75, 1600);
+	cout << "Enter the repair status: ";
+	new_pipe.pipe_repair = GetCorrectData(0, 1);
+	return in;
+}
+
+ostream& operator >> (ostream& out, const Pipe& new_pipe)
+{
+	/*out << endl << "Info about your pipe..." << endl;*/
+	if (new_pipe.pipe_name == "None")
+	{
+		out << "No pipes available!\n";
+	}
+	else
+	{
+		out << "Name: " << new_pipe.pipe_name << "\tLength: " << new_pipe.pipe_length
+			<< "\tDiameter: " << new_pipe.pipe_diameter << "\tRepair: " << new_pipe.pipe_repair << endl;
+	}
+	return out;
+}
+
+istream& operator << (istream& in, Station& new_station)
+{
+	cout << endl << "Adding a new CS..." << endl;
+	cout << "Enter the station name: ";
+	in.ignore();
+	getline(in, new_station.station_name);
+	cout << "Enter the number of workshops: ";
+	new_station.station_workshops = GetCorrectData(1, 12);
+	cout << "Enter the number of active workshops: ";
+	new_station.station_act_workshops = GetCorrectData(1, new_station.station_workshops);
+	while (new_station.station_act_workshops > new_station.station_workshops)
+	{
+		cout << "The number of active workshops cannot be greater than those available!\n";
+		cout << "Enter the number of active workshops: ";
+		new_station.station_act_workshops = GetCorrectData(1, new_station.station_workshops);
+	}
+	cout << "Enter the station efficiency indicator (from 0 to 1 with tenths): ";
+	new_station.station_efficiency = GetCorrectData(0.0, 1.0);
+	return in;
+}
+
+ostream& operator >> (ostream& out, const Station& new_station)
+{
+	/*cout << endl << "Info about your CS..." << endl;*/
+	if (new_station.station_name == "None")
+	{
+		cout << "No stations available!\n";
+	}
+	else
+	{
+		cout << "Name: " << new_station.station_name << "\tWorkshops: " << new_station.station_workshops
+			<< "\tActive workshops: " << new_station.station_act_workshops << "\tEfficiency: "
+			<< new_station.station_efficiency << endl;
+	}
+	return out;
+}
+
 int main() 
 {
 	Pipe pipe0;
 	Station station0;
+	unordered_map<int, Pipe> Pipes = {};
+	unordered_map<int, Station> Stations = {};
 	int num = 0;
 	while (true) {
 		cout << endl << "Menu:" << endl;
@@ -291,42 +311,71 @@ int main()
 		cout << "7) Download" << endl;
 		cout << "0) Exit" << endl;
 		cout << endl << "Please, enter the command number: ";
-		check_input(num);
-		//if (cin.fail() || num < 0 || num > 7)
-		//{
-		//	cout << "There is no such command, please, try again" << endl;
-		//	cin.clear();
-		//	cin.ignore(1000, '\n');
-		//	continue;
-		//}
-		switch (num)
+		switch (GetCorrectData(0, 7))
 		{
 		case 1:
 		{
-			pipe0 = AddPipe();
-			PrintAddPipe(pipe0);
+			//pipe0 = AddPipe();
+			//PrintAddPipe(pipe0);
+			//cin << pipe0;
+			//cout >> pipe0;
+			int k;
+			int id = 0;
+			Pipe pipe0;
+			cout << "Enter the number of pipes: ";
+			cin >> k;
+			while (id != k)
+			{
+				cin << pipe0;
+				Pipes.insert({ id, pipe0 });
+				cout >> Pipes[id];
+				id++;
+			}
 			break;
 		}
 		case 2:
 		{
-			station0 = AddStation();
-			PrintAddStation(station0);
+			//station0 = AddStation();
+			//PrintAddStation(station0);
+			//cin << station0;
+			//cout >> station0;
+			int k;
+			int id = 0;
+			Station station0;
+			cout << "Enter the number of stations: ";
+			cin >> k;
+			while (id != k)
+			{
+				cin << station0;
+				Stations.insert({ id, station0 });
+				cout >> Stations[id];
+				id++;
+			}
 			break;
 		}
 		case 3:
 		{
-			PrintAddPipe(pipe0);
-			PrintAddStation(station0);
+			//PrintAddPipe(pipe0);
+			cout << "Existing pipes:\n";
+			for (int i = 0; i < Pipes.size(); i++)
+			{
+				cout >> Pipes[i];
+			}
+			//PrintAddStation(station0);
+			for (int i = 0; i < Stations.size(); i++)
+			{
+				cout >> Stations[i];
+			}
 			break;
 		}
 		case 4:
 		{
-			RepairPipe(pipe0);
+			//RepairPipe(pipe0);
 			break;
 		}
 		case 5:
 		{
-			EditStation(station0);
+			//EditStation(station0);
 			break;
 		}
 		case 6:
