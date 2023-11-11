@@ -8,107 +8,34 @@
 using namespace std;
 
 template <typename T>
-T& SelectElement(unordered_map<int, T>& notes)
+T& SelectElement(unordered_map<int, T>& notes, int key)
 {
-	int id;
-	cout << "Enter ID: ";
-	cin >> id;
-	while (notes.find(id) == notes.end())
+	auto it = notes.find(key);
+	if (it != notes.end())
+	{
+		return it->second;
+	} else
 	{
 		cout << "Exceeding the number of available elements!" << endl
 			<< "Please, try again (number of elements: " << notes.size() << "): ";
 	}
-	return notes[id];
 }
 
-//void FileRecord(Pipe& pipeData, Station& stationData)
-//{
-//	ofstream fout("info");
-//	if (pipeData.pipe_name == "None")
-//	{
-//		cout << "Nothing to record about pipe!\n";
-//	}
-//	else
-//	{
-//		cout << "Info about the pipe is written to a file!\n";
-//		if (fout)
-//		{
-//			fout << "Info about your pipe...\n";
-//			fout << pipeData.pipe_name << endl;
-//			fout << pipeData.pipe_length << endl;
-//			fout << pipeData.pipe_diameter << endl;
-//			fout << pipeData.pipe_repair << endl;
-//		}
-//	}
-//	if (stationData.station_name == "None")
-//	{
-//		cout << "Nothing to record about station!\n";
-//	}
-//	else
-//	{
-//		cout << "Info about the station is written to a file!\n";
-//		if (fout)
-//		{
-//			fout << "Info about your station...\n";
-//			fout << stationData.station_name << endl;
-//			fout << stationData.station_workshops << endl;
-//			fout << stationData.station_act_workshops << endl;
-//			fout << stationData.station_efficiency << endl;
-//		}
-//	}
-//	fout.close();
-//}
-//
-//void FileOutput(Pipe& pipe_data, Station& station_data)
-//{
-//	ifstream fin("info");
-//	if (fin)
-//	{
-//		string zero_mean;
-//		int pipe_flag = 0;
-//		int station_flag = 0;
-//		while (getline(fin, zero_mean))
-//		{
-//			if (zero_mean == "Info about your pipe...")
-//			{
-//				cout << "\nThe pipe data is obtained from the file!" << endl;
-//				cout << "\nInfo about your pipe..." << endl;
-//				getline(fin, pipe_data.pipe_name);
-//				cout << "Name of the pipe: " << pipe_data.pipe_name << endl;
-//				fin >> pipe_data.pipe_length;
-//				cout << "Length of the pipe: " << pipe_data.pipe_length << endl;
-//				fin >> pipe_data.pipe_diameter;
-//				cout << "Diameter of the diameter: " << pipe_data.pipe_diameter << endl;
-//				fin >> pipe_data.pipe_repair;
-//				cout << "Repair status of the pipe: " << pipe_data.pipe_repair << endl;
-//				pipe_flag += 1;
-//			}
-//			if (zero_mean == "Info about your station...")
-//			{
-//				cout << "\nThe station data is obtained from the file!" << endl;
-//				cout << "\nInfo about your station..." << endl;
-//				getline(fin, station_data.station_name);
-//				cout << "Name of the station: " << station_data.station_name << endl;
-//				fin >> station_data.station_workshops;
-//				cout << "Number of workshops: " << station_data.station_workshops << endl;
-//				fin >> station_data.station_act_workshops;
-//				cout << "Number of active workshops: " << station_data.station_act_workshops << endl;
-//				fin >> station_data.station_efficiency;
-//				cout << "Station efficiency indicator: " << station_data.station_efficiency << endl;
-//				station_flag += 1;
-//			}
-//		}
-//		if (pipe_flag == 0)
-//		{
-//			cout << "\nNo info about pipe!" << endl;
-//		}
-//		if (station_flag == 0)
-//		{
-//			cout << "\nNo info about station!" << endl;
-//		}
-//		fin.close();
-//	}
-//}
+
+template <typename K>
+unordered_map<int, K> removeKeyIfExists(std::unordered_map<int, K>& notes, int key) {
+	if (notes.find(key) != notes.end()) {
+		notes.erase(key);
+		cout << "Removal was succesful!" << endl;
+		return notes;
+	}
+	else {
+		cout << "Key " << key << " does not exist!\nPlease enter a valid key: ";
+		int newKey;
+		cin >> newKey;
+		return removeKeyIfExists(notes, newKey);
+	}
+}
 
 int main() 
 {
@@ -124,12 +51,14 @@ int main()
 		cout << "3) View all objects" << endl;
 		cout << "4) Edit pipe" << endl;
 		cout << "5) Edit a CS" << endl;
-		cout << "6) Save" << endl;
-		cout << "7) Download" << endl;
-		cout << "8) Search" << endl;
+		cout << "6) Delete pipe" << endl;
+		cout << "7) Delete CS" << endl;
+		cout << "8) Save" << endl;
+		cout << "9) Download" << endl;
+		cout << "10) Search" << endl;
 		cout << "0) Exit" << endl;
 		cout << endl << "Please, enter the command number: ";
-		switch (GetCorrectData(0, 8))
+		switch (GetCorrectData(0, 10))
 		{
 		case 1:
 		{
@@ -158,35 +87,137 @@ int main()
 			if (Stations.size() == 0)
 				cout << "\nNo stations have been added!" << endl;
 			for (const auto& elem : Stations)
-			{
 				cout << elem.second;
-			}
 			break;
 		}
 		case 4:
 		{
-			cout << "\n[4] Edit pipe: " << endl;
-			Pipe pipe0 = SelectElement(Pipes);
-			EditPipe(pipe0);
+			if (Pipes.size() == 0) {
+				cout << "\nNo pipes available!" << endl;
+			}
+			else {
+				cout << "\n[4] Edit pipe: " << endl;
+				cout << "Enter ID: ";
+				int indPipes = Pipes.size();
+				Pipe& pipe0 = SelectElement(Pipes, GetCorrectData(1, indPipes));
+				EditPipe(pipe0);
+			}
 			break;
 		}
 		case 5:
 		{
-			cout << "\n[5] Edit CS: " << endl;
-			Station station0 = SelectElement(Stations);
-			EditStation(station0);
+			if (Stations.size() == 0) {
+				cout << "\nNo CS available!" << endl;
+			}
+			else {
+				cout << "\n[5] Edit CS: " << endl;
+				cout << "Enter ID: ";
+				int indStations = Stations.size();
+				Station& station0 = SelectElement(Stations, GetCorrectData(1, indStations));
+				EditStation(station0);
+			}
 			break;
 		}
-		//case 6:
-		//{
-		//	FileRecord(pipe0, station0);
-		//	break;
-		//}
-		//case 7:
-		//{
-		//	FileOutput(pipe0, station0);
-		//	break;
-		//}
+		case 6:
+		{
+			if (Pipes.size() == 0) {
+				cout << "\nNo pipes available!" << endl;
+			}
+			else {
+				cout << "\n[6] Delete pipe: " << endl;
+				cout << "Enter ID: ";
+				int key0;
+				cin >> key0;
+				removeKeyIfExists(Pipes, key0);
+			}
+			break;
+		}		
+		case 7:
+		{
+			if (Stations.size() == 0) {
+				cout << "\nNo stations available!" << endl;
+			}
+			else {
+				cout << "\n[7] Delete station: " << endl;
+				cout << "Enter ID: ";
+				int key0;
+				cin >> key0;
+				removeKeyIfExists(Stations, key0);
+			}
+			break;
+		}
+		case 8:
+		{
+			cout << "\n[8] Save" << endl;
+			ofstream fout;
+			string fileName;
+			cout << "Please, enter file: ";
+			cin.ignore();
+			getline(cin, fileName);
+			fout.open(fileName);
+			if (!fout.is_open())
+			{
+				cout << "Error in opening file!" << endl;
+			}
+			else {
+				fout << Pipes.size() << endl;
+				for (const auto& elem : Pipes)
+					fout << elem.second;
+				cout << "Pipe data has been saving succesfully!" << endl;
+
+				fout << Stations.size() << endl;
+				for (const auto& elem : Stations)
+					fout << elem.second;
+				cout << "Station data has been saving succesfully!" << endl;
+			}
+			fout.close();
+			break;
+		}
+		case 9:
+		{
+			cout << "\n[9] Download" << endl;
+			ifstream fin;
+			string fileName;
+			cout << "Please, enter file name: ";
+			cin.ignore();
+			getline(cin, fileName);
+			fin.open(fileName);
+			if (!fin.is_open())
+			{
+				cout << "Error in opening file!" << endl;
+			}
+			else {
+				int pipesSize;
+				fin >> pipesSize;
+				if (pipesSize == 0)
+					cout << "No info about pipes!" << endl;
+				else {
+					cout << "Pipe data has been uploaded succesfully!" << endl;
+				}
+				while (pipesSize-- > 0)
+				{
+					Pipe pipe0;
+					fin >> pipe0;
+					Pipes.insert({ pipe0.GetId(), pipe0 });
+				}
+
+				int csSize;
+				fin >> csSize;
+				if (csSize == 0)
+					cout << "No info about CS!" << endl;
+				else {
+					cout << "Station data has been uploaded succesfully!" << endl;
+				}
+				while (csSize-- > 0)
+				{
+					Station station0;
+					fin >> station0;
+					Stations.insert({ station0.GetId(), station0 });
+				}
+				fin.close();
+			}
+			break;
+		}
 		case 0:
 		{
 			return false;

@@ -25,8 +25,8 @@ int Station::GetActWorkshops() const
 
 void Station::PrintWorkshops() const
 {
-    cout << "At the moment " << stationActWorkshops << 
-        " out of " << stationWorkshops << " are working" << endl;
+    cout << "at the moment " << stationActWorkshops << 
+        " out of " << stationWorkshops << " workshops are working" << endl;
 }
 
 void EditStation(Station& station)
@@ -40,8 +40,8 @@ void EditStation(Station& station)
     case 1:
     {
         cout << "Enter the number of active workshops: ";
-        GetCorrectData(1, station.GetWorkshops());
-        cout << "ID: " << station.Id << " - ";
+        station.stationActWorkshops = GetCorrectData(1, station.GetWorkshops());
+        cout << "ID: " << station.Id << ": ";
         station.PrintWorkshops();
     }
     case 2:
@@ -78,10 +78,31 @@ ostream& operator << (ostream& out, const Station& newStation)
 	}
 	else
 	{
-		out << "Name: " << newStation.stationName << "\tWorkshops: " << newStation.stationWorkshops
+		out << "ID: " << newStation.Id << "\tName: " << newStation.stationName << "\tWorkshops: " << newStation.stationWorkshops
 			<< "\tActive workshops: " << newStation.stationActWorkshops << "\tEfficiency: " << newStation.stationEfficiency << endl;
 	}
 	return out;
 }
 
+ifstream& operator >> (ifstream& fin, Station& newStation)
+{
+    fin >> newStation.Id;
+    newStation.maxId = newStation.Id;
+    fin.ignore();
+    getline(fin, newStation.stationName);
+    fin >> newStation.stationWorkshops;
+    fin >> newStation.stationActWorkshops;
+    fin >> newStation.stationEfficiency;
+    return fin;
+}
+
+ofstream& operator << (ofstream& fout, const Station& newStation)
+{
+    fout << newStation.Id << endl;
+    fout << newStation.stationName << endl;
+    fout << newStation.stationWorkshops << endl;
+    fout << newStation.stationActWorkshops << endl;
+    fout << newStation.stationEfficiency << endl;
+    return fout;
+}
 

@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <fstream>
 #include "Utilities.h"
 using namespace std;
 
@@ -22,5 +23,7 @@ public:
 	friend void EditStation(Station& station);
 	friend ostream& operator << (ostream& out, const Station& newStation);
 	friend istream& operator >> (istream& in, Station& newStation);
+	friend ofstream& operator << (ofstream& fout, const Station& newStation);
+	friend ifstream& operator >> (ifstream& fin, Station& newStation);
 };
 

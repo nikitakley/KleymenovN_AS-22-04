@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include <fstream>
 using namespace std;
 
 class Pipe
@@ -21,5 +22,7 @@ public:
 	friend void EditPipe(Pipe& pipe);
 	friend ostream& operator << (ostream& out, const Pipe& newPipe);
 	friend istream& operator >> (istream& in, Pipe& newPipe);
+	friend ofstream& operator << (ofstream& fout, const Pipe& newPipe);
+	friend ifstream& operator >> (ifstream& fin, Pipe& newPipe);
 };
 

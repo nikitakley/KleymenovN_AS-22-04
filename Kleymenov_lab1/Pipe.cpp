@@ -38,8 +38,8 @@ void EditPipe(Pipe& pipe)
 	{
 	case 1:
 	{
-		bool pipeRepair = false;
-		GetCorrectData(pipeRepair, true);
+		cout << "Enter repair status: ";
+		bool pipeRepair = GetCorrectData(false, true);;
 		pipe.pipeRepair = pipeRepair;
 		cout << "ID: " << pipe.Id << ": ";
 		pipe.PrintPipeRepair();
@@ -81,8 +81,30 @@ ostream& operator << (ostream& out, const Pipe& newPipe)
 	}
 	else
 	{
-		out << "Name: " << newPipe.pipeName << "\tLength: " << newPipe.pipeLength
+		out << "ID: " << newPipe.Id << "\tName: " << newPipe.pipeName << "\tLength: " << newPipe.pipeLength
 			<< "\tDiameter: " << newPipe.pipeDiameter << "\tRepair: " << newPipe.pipeRepair << endl;
 	}
 	return out;
+}
+
+ifstream& operator >> (ifstream& fin, Pipe& newPipe)
+{
+	fin >> newPipe.Id;
+	newPipe.maxId = newPipe.Id;
+	fin.ignore();
+	getline(fin, newPipe.pipeName);
+	fin >> newPipe.pipeLength;
+	fin >> newPipe.pipeDiameter;
+	fin >> newPipe.pipeRepair;
+	return fin;
+}
+
+ofstream& operator << (ofstream& fout, const Pipe& newPipe)
+{
+	fout << newPipe.Id << endl;
+	fout << newPipe.pipeName << endl;
+	fout << newPipe.pipeLength << endl;
+	fout << newPipe.pipeDiameter << endl;
+	fout << newPipe.pipeRepair << endl;
+	return fout;
 }
