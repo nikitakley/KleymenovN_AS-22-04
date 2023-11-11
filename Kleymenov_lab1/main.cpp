@@ -37,6 +37,122 @@ unordered_map<int, K> removeKeyIfExists(std::unordered_map<int, K>& notes, int k
 	}
 }
 
+void searchPipe(unordered_map<int, Pipe>& Pipes)
+{
+	while (true)
+	{
+		cout << "\nSelect the feature by which you want to select a pipe: " << endl;
+		cout << "1. Name" << endl;
+		cout << "2. Repair status" << endl;
+		cout << "3. Return" << endl;
+		cout << "Please, enter you choice: ";
+		switch (GetCorrectData(1, 3))
+		{
+		case 1:
+		{
+			string pipeName;
+			cout << "\nEnter the pipe name: ";
+			cin.ignore();
+			getline(cin, pipeName);
+			vector<Pipe*> editPipes;
+			for (auto& elem : Pipes)
+			{
+				if (elem.second.GetName().find(pipeName) != string::npos)
+				{
+					cout << elem.second << endl;
+					editPipes.push_back(&(elem.second));
+				}
+			}
+			if (editPipes.empty())
+				cout << "There is no pipe with that name!" << endl;
+		}
+		break;
+		case 2:
+		{
+			cout << "Enter the pipe repair status: ";
+			bool repairStatus = GetCorrectData(false, true);
+			vector<Pipe*> editPipes;
+			for (auto& elem : Pipes)
+			{
+				if (elem.second.GetStatus() == repairStatus)
+				{
+					cout << elem.second << endl;
+					editPipes.push_back(&(elem.second));
+				}
+			}
+			if (editPipes.empty())
+				cout << "There is no pipe with that repair status!" << endl;
+		}
+		break;
+		case 3:
+			return;
+		default:
+		{
+			cout << "Please, enter the correct data!" << endl;
+			break;
+		}
+		}
+	}
+}
+
+void searchStation(unordered_map<int, Station>& Stations)
+{
+	while (true)
+	{
+		cout << "\nSelect the feature by which you want to select a CS: " << endl;
+		cout << "1. Name" << endl;
+		cout << "2. Number of active workshops" << endl;
+		cout << "3. Return" << endl;
+		cout << "Please, enter you choice: ";
+		switch (GetCorrectData(1, 3))
+		{
+		case 1:
+		{
+			string stationName;
+			cout << "\nEnter the station name: ";
+			cin.ignore();
+			getline(cin, stationName);
+			vector<Station*> editStations;
+			for (auto& elem : Stations)
+			{
+				if (elem.second.GetName().find(stationName) != string::npos)
+				{
+					cout << elem.second << endl;
+					editStations.push_back(&(elem.second));
+				}
+			}
+			if (editStations.empty())
+				cout << "There is no station with that name!" << endl;
+		}
+		break;
+		case 2:
+		{
+			cout << "\nEnter the number of active workshops: ";
+			int numActWorkshops = GetCorrectData(1, 12);
+			vector<Station*> editStations;
+			for (auto& elem : Stations)
+			{
+				if (elem.second.GetActWorkshops() == numActWorkshops)
+				{
+					cout << elem.second << endl;
+					editStations.push_back(&(elem.second));
+				}
+			}
+			if (editStations.empty())
+				cout << "There is no station with that number of active workshops!" << endl;
+		}
+		break;
+		case 3:
+			return;
+		default:
+		{
+			cout << "Please, enter the correct data!" << endl;
+			break;
+		}
+		}
+	}
+}
+
 int main() 
 {
 	Pipe pipe0;
@@ -215,6 +331,36 @@ int main()
 					Stations.insert({ station0.GetId(), station0 });
 				}
 				fin.close();
+			}
+			break;
+		}
+		case 10:
+		{
+			bool flag = true;
+			while (flag) {
+				cout << "\n[10] Search" << endl;
+				cout << "What do you need to find?" << endl;
+				cout << "1. Pipe" << endl;
+				cout << "2. CS" << endl;
+				cout << "3. Return" << endl;
+				cout << "Please, enter command: ";
+				switch (GetCorrectData(1, 3))
+				{
+				case 1:
+					cout << "\nSearching pipe..." << endl;
+					searchPipe(Pipes);
+					break;
+				case 2:
+					cout << "\nSearching CS..." << endl;
+					searchStation(Stations);
+					break;
+				case 3:
+					flag = false;
+					break;
+				default:
+					cout << "Please, enter the correct command!" << endl;
+					break;
+				}
 			}
 			break;
 		}
