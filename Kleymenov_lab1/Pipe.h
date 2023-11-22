@@ -21,6 +21,7 @@ public:
 	void PrintPipeRepair();
 
 	friend void EditPipe(Pipe& pipe);
+	friend void EditPipes(vector <Pipe*>& pipes);
 	friend ostream& operator << (ostream& out, const Pipe& newPipe);
 	friend istream& operator >> (istream& in, Pipe& newPipe);
 	friend ofstream& operator << (ofstream& fout, const Pipe& newPipe);

@@ -7,36 +7,6 @@
 #include "Utilities.h"
 using namespace std;
 
-template <typename T>
-T& SelectElement(unordered_map<int, T>& notes, int key)
-{
-	auto it = notes.find(key);
-	if (it != notes.end())
-	{
-		return it->second;
-	} else
-	{
-		cout << "Exceeding the number of available elements!" << endl
-			<< "Please, try again (number of elements: " << notes.size() << "): ";
-	}
-}
-
-
-template <typename K>
-unordered_map<int, K> removeKeyIfExists(std::unordered_map<int, K>& notes, int key) {
-	if (notes.find(key) != notes.end()) {
-		notes.erase(key);
-		cout << "Removal was succesful!" << endl;
-		return notes;
-	}
-	else {
-		cout << "Key " << key << " does not exist!\nPlease enter a valid key: ";
-		int newKey;
-		cin >> newKey;
-		return removeKeyIfExists(notes, newKey);
-	}
-}
-
 void searchPipe(unordered_map<int, Pipe>& Pipes)
 {
 	while (true)
@@ -59,12 +29,14 @@ void searchPipe(unordered_map<int, Pipe>& Pipes)
 			{
 				if (elem.second.GetName().find(pipeName) != string::npos)
 				{
-					cout << elem.second << endl;
+					cout << elem.second;
 					editPipes.push_back(&(elem.second));
 				}
 			}
 			if (editPipes.empty())
 				cout << "There is no pipe with that name!" << endl;
+			else
+				EditPipes(editPipes);
 		}
 		break;
 		case 2:
@@ -76,12 +48,14 @@ void searchPipe(unordered_map<int, Pipe>& Pipes)
 			{
 				if (elem.second.GetStatus() == repairStatus)
 				{
-					cout << elem.second << endl;
+					cout << elem.second;
 					editPipes.push_back(&(elem.second));
 				}
 			}
 			if (editPipes.empty())
 				cout << "There is no pipe with that repair status!" << endl;
+			else
+				EditPipes(editPipes);
 		}
 		break;
 		case 3:
@@ -101,7 +75,7 @@ void searchStation(unordered_map<int, Station>& Stations)
 	{
 		cout << "\nSelect the feature by which you want to select a CS: " << endl;
 		cout << "1. Name" << endl;
-		cout << "2. Number of active workshops" << endl;
+		cout << "2. Percent of non-active workshops" << endl;
 		cout << "3. Return" << endl;
 		cout << "Please, enter you choice: ";
 		switch (GetCorrectData(1, 3))
@@ -109,7 +83,7 @@ void searchStation(unordered_map<int, Station>& Stations)
 		case 1:
 		{
 			string stationName;
-			cout << "\nEnter the station name: ";
+			cout << "Enter the station name : ";
 			cin.ignore();
 			getline(cin, stationName);
 			vector<Station*> editStations;
@@ -117,29 +91,69 @@ void searchStation(unordered_map<int, Station>& Stations)
 			{
 				if (elem.second.GetName().find(stationName) != string::npos)
 				{
-					cout << elem.second << endl;
+					cout << elem.second;
 					editStations.push_back(&(elem.second));
 				}
 			}
 			if (editStations.empty())
 				cout << "There is no station with that name!" << endl;
+			else
+				EditStations(editStations);
 		}
 		break;
 		case 2:
 		{
-			cout << "\nEnter the number of active workshops: ";
-			int numActWorkshops = GetCorrectData(1, 12);
+			cout << "\nEnter the percent of non-active workshops: ";
+			int percent = GetCorrectData(0, 100);
+			cout << "What limits the search should be?" << endl;
+			cout << "1. Less (<%)" << endl;
+			cout << "2. Equal (=%)" << endl;
+			cout << "3. More (>%)" << endl;
+			cout << "Please, enter your choice: ";
 			vector<Station*> editStations;
-			for (auto& elem : Stations)
+			switch (GetCorrectData(1, 3))
 			{
-				if (elem.second.GetActWorkshops() == numActWorkshops)
+			case 1:
+			{
+				for (auto& elem : Stations)
 				{
-					cout << elem.second << endl;
-					editStations.push_back(&(elem.second));
+					if (elem.second.GetPercentOfNonActiveWorkshops() < percent)
+					{
+						cout << elem.second;
+						editStations.push_back(&(elem.second));
+					}
 				}
 			}
+			break;
+			case 2:
+			{
+				for (auto& elem : Stations)
+				{
+					if (elem.second.GetPercentOfNonActiveWorkshops() == percent)
+					{
+						cout << elem.second;
+						editStations.push_back(&(elem.second));
+					}
+				}
+			}
+			break;
+			case 3:
+			{
+				for (auto& elem : Stations)
+				{
+					if (elem.second.GetPercentOfNonActiveWorkshops() > percent)
+					{
+						cout << elem.second;
+						editStations.push_back(&(elem.second));
+					}
+				}
+			}
+			break;
+			}
 			if (editStations.empty())
-				cout << "There is no station with that number of active workshops!" << endl;
+				cout << "There is no station with that percent!" << endl;
+			else
+				EditStations(editStations);
 		}
 		break;
 		case 3:

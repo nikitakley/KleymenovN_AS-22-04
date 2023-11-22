@@ -18,9 +18,11 @@ public:
 	string GetName() const;
 	int GetWorkshops() const;
 	int GetActWorkshops() const;
+	int GetPercentOfNonActiveWorkshops() const;
 	void PrintWorkshops() const;
 
 	friend void EditStation(Station& station);
+	friend void EditStations(vector <Station*> stations);
 	friend ostream& operator << (ostream& out, const Station& newStation);
 	friend istream& operator >> (istream& in, Station& newStation);
 	friend ofstream& operator << (ofstream& fout, const Station& newStation);

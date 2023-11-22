@@ -57,6 +57,34 @@ void EditPipe(Pipe& pipe)
 	}
 }
 
+void EditPipes(vector<Pipe*>& pipes)
+{
+	cout << "\nDo you want to edit repair status of the found pipes?" << endl;
+	cout << "1. Yes" << endl;
+	cout << "2. No" << endl;
+	cout << "Please, enter you choice: ";
+	switch (GetCorrectData(1, 2))
+	{
+	case 1:
+	{
+		cout << "Enter repair status for all pipes: ";
+		bool repSt = GetCorrectData(false, true);
+
+		for (auto& pipe : pipes)
+		{
+			pipe->pipeRepair = repSt;
+		}
+		cout << "\nStatus has been successfully changed for all pipes!" << endl;
+		break;
+	}
+	case 2:
+		return;
+	default:
+		cout << "Please, enter the correct data!" << endl;
+		break;
+	}
+}
+
 istream& operator >> (istream& in, Pipe& newPipe)
 {
 	newPipe.Id = ++newPipe.maxId;

@@ -23,6 +23,11 @@ int Station::GetActWorkshops() const
     return stationActWorkshops;
 }
 
+int Station::GetPercentOfNonActiveWorkshops() const
+{
+    return (stationWorkshops - stationActWorkshops) * 100 / stationWorkshops;
+}
+
 void Station::PrintWorkshops() const
 {
     cout << "at the moment " << stationActWorkshops << 
@@ -51,6 +56,33 @@ void EditStation(Station& station)
         cout << "Please, enter the correct command!\n" << endl;
         break;
     }
+    }
+}
+
+void EditStations(vector<Station*> stations)
+{
+    cout << "\nDo you want to change the number of active workshops?" << endl;
+    cout << "1. Yes" << endl;
+    cout << "2. No" << endl;
+    cout << "Please, enter your choice: ";
+    switch (GetCorrectData(1, 2))
+    {
+    case 1:
+    {
+        cout << "Enter the percent of non-active workshops: ";
+        float percent = GetCorrectData(0.0, 100.0);
+        for (auto& station : stations)
+        {
+            station->stationActWorkshops = round(station->stationWorkshops * (100 - percent) / 100);
+        }
+        cout << "\nThe number of active workshops has been successfully changed for all CS!" << endl;
+        break;
+    }
+    case 2:
+        return;
+    default:
+        cout << "Please, enter the correct data!";
+        break;
     }
 }
 
