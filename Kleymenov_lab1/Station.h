@@ -6,6 +6,7 @@ using namespace std;
 
 class Station
 {
+public:
 	static int maxId;
 	int Id;
 	string stationName = "None";
@@ -13,7 +14,6 @@ class Station
 	int stationActWorkshops = 0;
 	double stationEfficiency = 0.0;
 
-public:
 	int GetId();
 	string GetName() const;
 	int GetWorkshops() const;
@@ -21,8 +21,8 @@ public:
 	int GetPercentOfNonActiveWorkshops() const;
 	void PrintWorkshops() const;
 
-	friend void EditStation(Station& station);
-	friend void EditStations(vector <Station*> stations);
+	//friend void EditStation(Station& station);
+	//friend void EditStations(vector <Station*> stations);
 	friend ostream& operator << (ostream& out, const Station& newStation);
 	friend istream& operator >> (istream& in, Station& newStation);
 	friend ofstream& operator << (ofstream& fout, const Station& newStation);

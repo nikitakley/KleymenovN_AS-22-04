@@ -7,6 +7,7 @@ using namespace std;
 
 class Pipe
 {
+public:
 	static int maxId;
 	int Id;
 	string pipeName = "None";
@@ -14,14 +15,13 @@ class Pipe
 	int pipeDiameter = 0;
 	bool pipeRepair = false;
 
-public:
 	int GetId();
 	string GetName() const;
 	bool GetStatus();
 	void PrintPipeRepair();
 
-	friend void EditPipe(Pipe& pipe);
-	friend void EditPipes(vector <Pipe*>& pipes);
+	//friend void EditPipe(Pipe& pipe);
+	//friend void EditPipes(vector <Pipe*>& pipes);
 	friend ostream& operator << (ostream& out, const Pipe& newPipe);
 	friend istream& operator >> (istream& in, Pipe& newPipe);
 	friend ofstream& operator << (ofstream& fout, const Pipe& newPipe);

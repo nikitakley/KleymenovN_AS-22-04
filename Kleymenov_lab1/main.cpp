@@ -2,177 +2,29 @@
 #include <fstream>
 #include <string>
 #include <unordered_map>
+#include <chrono>
+#include <format>
 #include "Pipe.h"
 #include "Station.h"
+#include "GTS.h"
 #include "Utilities.h"
+
 using namespace std;
-
-void searchPipe(unordered_map<int, Pipe>& Pipes)
-{
-	while (true)
-	{
-		cout << "\nSelect the feature by which you want to select a pipe: " << endl;
-		cout << "1. Name" << endl;
-		cout << "2. Repair status" << endl;
-		cout << "3. Return" << endl;
-		cout << "Please, enter you choice: ";
-		switch (GetCorrectData(1, 3))
-		{
-		case 1:
-		{
-			string pipeName;
-			cout << "\nEnter the pipe name: ";
-			cin.ignore();
-			getline(cin, pipeName);
-			vector<Pipe*> editPipes;
-			for (auto& elem : Pipes)
-			{
-				if (elem.second.GetName().find(pipeName) != string::npos)
-				{
-					cout << elem.second;
-					editPipes.push_back(&(elem.second));
-				}
-			}
-			if (editPipes.empty())
-				cout << "There is no pipe with that name!" << endl;
-			else
-				EditPipes(editPipes);
-		}
-		break;
-		case 2:
-		{
-			cout << "Enter the pipe repair status: ";
-			bool repairStatus = GetCorrectData(false, true);
-			vector<Pipe*> editPipes;
-			for (auto& elem : Pipes)
-			{
-				if (elem.second.GetStatus() == repairStatus)
-				{
-					cout << elem.second;
-					editPipes.push_back(&(elem.second));
-				}
-			}
-			if (editPipes.empty())
-				cout << "There is no pipe with that repair status!" << endl;
-			else
-				EditPipes(editPipes);
-		}
-		break;
-		case 3:
-			return;
-		default:
-		{
-			cout << "Please, enter the correct data!" << endl;
-			break;
-		}
-		}
-	}
-}
-
-void searchStation(unordered_map<int, Station>& Stations)
-{
-	while (true)
-	{
-		cout << "\nSelect the feature by which you want to select a CS: " << endl;
-		cout << "1. Name" << endl;
-		cout << "2. Percent of non-active workshops" << endl;
-		cout << "3. Return" << endl;
-		cout << "Please, enter you choice: ";
-		switch (GetCorrectData(1, 3))
-		{
-		case 1:
-		{
-			string stationName;
-			cout << "Enter the station name : ";
-			cin.ignore();
-			getline(cin, stationName);
-			vector<Station*> editStations;
-			for (auto& elem : Stations)
-			{
-				if (elem.second.GetName().find(stationName) != string::npos)
-				{
-					cout << elem.second;
-					editStations.push_back(&(elem.second));
-				}
-			}
-			if (editStations.empty())
-				cout << "There is no station with that name!" << endl;
-			else
-				EditStations(editStations);
-		}
-		break;
-		case 2:
-		{
-			cout << "\nEnter the percent of non-active workshops: ";
-			int percent = GetCorrectData(0, 100);
-			cout << "What limits the search should be?" << endl;
-			cout << "1. Less (<%)" << endl;
-			cout << "2. Equal (=%)" << endl;
-			cout << "3. More (>%)" << endl;
-			cout << "Please, enter your choice: ";
-			vector<Station*> editStations;
-			switch (GetCorrectData(1, 3))
-			{
-			case 1:
-			{
-				for (auto& elem : Stations)
-				{
-					if (elem.second.GetPercentOfNonActiveWorkshops() < percent)
-					{
-						cout << elem.second;
-						editStations.push_back(&(elem.second));
-					}
-				}
-			}
-			break;
-			case 2:
-			{
-				for (auto& elem : Stations)
-				{
-					if (elem.second.GetPercentOfNonActiveWorkshops() == percent)
-					{
-						cout << elem.second;
-						editStations.push_back(&(elem.second));
-					}
-				}
-			}
-			break;
-			case 3:
-			{
-				for (auto& elem : Stations)
-				{
-					if (elem.second.GetPercentOfNonActiveWorkshops() > percent)
-					{
-						cout << elem.second;
-						editStations.push_back(&(elem.second));
-					}
-				}
-			}
-			break;
-			}
-			if (editStations.empty())
-				cout << "There is no station with that percent!" << endl;
-			else
-				EditStations(editStations);
-		}
-		break;
-		case 3:
-			return;
-		default:
-		{
-			cout << "Please, enter the correct data!" << endl;
-			break;
-		}
-		}
-	}
-}
+using namespace chrono;
 
 int main() 
 {
+	redirect_output_wrapper cerr_out(cerr);
+	string time = format("{:%d_%m_%Y %H_%M_%OS}", system_clock::now() + hours(3));
+	ofstream logfile("log_" + time);
+	if (logfile)
+		cerr_out.redirect(logfile);
+
 	Pipe pipe0;
 	Station station0;
 	unordered_map<int, Pipe> Pipes = {};
 	unordered_map<int, Station> Stations = {};
+	GTS gts;
 	int num = 0;
 	while (true) {
 		cout << endl << "Menu:" << endl;
@@ -230,7 +82,7 @@ int main()
 				cout << "Enter ID: ";
 				int indPipes = Pipes.size();
 				Pipe& pipe0 = SelectElement(Pipes, GetCorrectData(1, indPipes));
-				EditPipe(pipe0);
+				gts.EditPipe(pipe0);
 			}
 			break;
 		}
@@ -244,7 +96,7 @@ int main()
 				cout << "Enter ID: ";
 				int indStations = Stations.size();
 				Station& station0 = SelectElement(Stations, GetCorrectData(1, indStations));
-				EditStation(station0);
+				gts.EditStation(station0);
 			}
 			break;
 		}
@@ -362,11 +214,11 @@ int main()
 				{
 				case 1:
 					cout << "\nSearching pipe..." << endl;
-					searchPipe(Pipes);
+					gts.searchPipe(Pipes);
 					break;
 				case 2:
 					cout << "\nSearching CS..." << endl;
-					searchStation(Stations);
+					gts.searchStation(Stations);
 					break;
 				case 3:
 					flag = false;

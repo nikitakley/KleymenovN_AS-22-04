@@ -34,57 +34,57 @@ void Station::PrintWorkshops() const
         " out of " << stationWorkshops << " workshops are working" << endl;
 }
 
-void EditStation(Station& station)
-{
-    cout << "Tne number of active workshops will be changed, do you agree?" << endl;
-    cout << "1. Yes" << endl;
-    cout << "2. No" << endl;
-    cout << "Please, enter you choice: ";
-    switch (GetCorrectData(1, 2))
-    {
-    case 1:
-    {
-        cout << "Enter the number of active workshops: ";
-        station.stationActWorkshops = GetCorrectData(1, station.GetWorkshops());
-        cout << "ID: " << station.Id << ": ";
-        station.PrintWorkshops();
-    }
-    case 2:
-        return;
-    default:
-    {
-        cout << "Please, enter the correct command!\n" << endl;
-        break;
-    }
-    }
-}
+//void EditStation(Station& station)
+//{
+//    cout << "Tne number of active workshops will be changed, do you agree?" << endl;
+//    cout << "1. Yes" << endl;
+//    cout << "2. No" << endl;
+//    cout << "Please, enter you choice: ";
+//    switch (GetCorrectData(1, 2))
+//    {
+//    case 1:
+//    {
+//        cout << "Enter the number of active workshops: ";
+//        station.stationActWorkshops = GetCorrectData(1, station.GetWorkshops());
+//        cout << "ID: " << station.Id << ": ";
+//        station.PrintWorkshops();
+//    }
+//    case 2:
+//        return;
+//    default:
+//    {
+//        cout << "Please, enter the correct command!\n" << endl;
+//        break;
+//    }
+//    }
+//}
 
-void EditStations(vector<Station*> stations)
-{
-    cout << "\nDo you want to change the number of active workshops?" << endl;
-    cout << "1. Yes" << endl;
-    cout << "2. No" << endl;
-    cout << "Please, enter your choice: ";
-    switch (GetCorrectData(1, 2))
-    {
-    case 1:
-    {
-        cout << "Enter the percent of non-active workshops: ";
-        float percent = GetCorrectData(0.0, 100.0);
-        for (auto& station : stations)
-        {
-            station->stationActWorkshops = round(station->stationWorkshops * (100 - percent) / 100);
-        }
-        cout << "\nThe number of active workshops has been successfully changed for all CS!" << endl;
-        break;
-    }
-    case 2:
-        return;
-    default:
-        cout << "Please, enter the correct data!";
-        break;
-    }
-}
+//void EditStations(vector<Station*> stations)
+//{
+//    cout << "\nDo you want to change the number of active workshops?" << endl;
+//    cout << "1. Yes" << endl;
+//    cout << "2. No" << endl;
+//    cout << "Please, enter your choice: ";
+//    switch (GetCorrectData(1, 2))
+//    {
+//    case 1:
+//    {
+//        cout << "Enter the percent of non-active workshops: ";
+//        float percent = GetCorrectData(0.0, 100.0);
+//        for (auto& station : stations)
+//        {
+//            station->stationActWorkshops = round(station->stationWorkshops * (100 - percent) / 100);
+//        }
+//        cout << "\nThe number of active workshops has been successfully changed for all CS!" << endl;
+//        break;
+//    }
+//    case 2:
+//        return;
+//    default:
+//        cout << "Please, enter the correct data!";
+//        break;
+//    }
+//}
 
 istream& operator >> (istream& in, Station& newStation)
 {
