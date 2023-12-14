@@ -20,6 +20,21 @@ T GetCorrectData(T min, T max)
 }
 
 template <typename T>
+T GetCorrectDiameter(T min, T max)
+{
+	T diam;
+	cin >> diam;
+	while (((diam != 500) && (diam != 700) && (diam != 1000) && (diam != 1400)) || diam < min || diam > max || cin.fail() || cin.peek() != '\n')
+	{
+		cin.clear();
+		cin.ignore(1000000, '\n');
+		cout << "Please, enter the correct pipe diameter [500, 700, 1000, 1400]: ";
+		cin >> diam;
+	}
+	return diam;
+}
+
+template <typename T>
 T& SelectElement(unordered_map<int, T>& notes, int key)
 {
 	auto it = notes.find(key);

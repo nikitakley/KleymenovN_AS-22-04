@@ -14,11 +14,18 @@ public:
 	double pipeLength = 0.0;
 	int pipeDiameter = 0;
 	bool pipeRepair = false;
+	int CSid1 = 0;
+	int CSid2 = 0;
 
 	int GetId();
+	int GetDiametr() const;
+
 	string GetName() const;
 	bool GetStatus();
 	void PrintPipeRepair();
+	bool ConnectionNotBusy() const;
+	void Connect(const int& id1, const int& id2);
+	void DeleteConnection();
 
 	//friend void EditPipe(Pipe& pipe);
 	//friend void EditPipes(vector <Pipe*>& pipes);

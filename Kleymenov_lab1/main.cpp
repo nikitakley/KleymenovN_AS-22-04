@@ -38,9 +38,13 @@ int main()
 		cout << "8) Save" << endl;
 		cout << "9) Download" << endl;
 		cout << "10) Search" << endl;
+		cout << "11) Connect the pipe and CS" << endl;
+		cout << "12) Show GTS" << endl;
+		cout << "13) Delete GTS" << endl;
+		cout << "14) Topological sort" << endl;
 		cout << "0) Exit" << endl;
 		cout << endl << "Please, enter the command number: ";
-		switch (GetCorrectData(0, 10))
+		switch (GetCorrectData(0, 14))
 		{
 		case 1:
 		{
@@ -228,6 +232,71 @@ int main()
 					break;
 				}
 			}
+			break;
+		}
+		case 11:
+		{
+			cout << "\n[11] Connect the pipe and CS..." << endl;
+			if (Stations.size() < 2)
+				cout << "CS not enough!" << endl;
+			else
+				gts.ConnectInGTS(Pipes, Stations);
+			break;
+		}
+		case 12:
+		{
+			cout << "\n[12] Show GTS..." << endl;
+			if (Pipes.size() == 0)
+				cout << "Pipes don`t exists!" << endl;
+			if (Stations.size() == 0)
+				cout << "CS don`t exists!" << endl;
+			int connectCount = 0;
+			for (const auto& elem : Pipes)
+				if (!elem.second.ConnectionNotBusy())
+				{
+					cout << "CS1 [" << elem.second.CSid1 << "] - Pipe [" << elem.first << "] - CS2 [" << elem.second.CSid2 << "]" << endl;
+					connectCount++;
+				}
+			cout << "There are " << connectCount << " connections" << endl;
+			break;
+		}
+		case 13:
+		{
+			cout << "\n[13] Delete GTS..." << endl;
+			if (Pipes.size() == 0)
+				cout << "Pipes don`t exists!" << endl;
+			else
+			{
+				cout << "Enter the ID of the pipe to delete: ";
+				int delPipe;
+				GetCorrectData(1, int(Pipes.size()));
+				while (Pipes.find(delPipe) == Pipes.end())
+				{
+					cout << "\nPipe with this ID not exist! Please, try again: ";
+					GetCorrectData(1, int(Pipes.size()));
+				}
+				if (Pipes[delPipe].ConnectionNotBusy())
+				{
+					cout << "Pipe not in GTS" << endl;
+				}
+				else
+				{
+					Pipes[delPipe].DeleteConnection();
+					cout << "Connection deleted sucecessful!" << endl;
+				}
+			}
+			break;
+		}
+		case 14:
+		{
+			cout << "\n[14] Topological Sort..." << endl;
+			vector<int> sortStations = gts.topologSort(Pipes, Stations);
+
+			for (int id : sortStations)
+			{
+				cout << id << " ";
+			}
+			cout << endl;
 			break;
 		}
 		case 0:

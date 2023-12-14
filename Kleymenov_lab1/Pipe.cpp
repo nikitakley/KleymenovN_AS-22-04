@@ -8,6 +8,11 @@ int Pipe::GetId()
     return Id;
 }
 
+int Pipe::GetDiametr() const
+{
+	return pipeDiameter;
+}
+
 string Pipe::GetName() const
 {
     return pipeName;
@@ -28,62 +33,22 @@ void Pipe::PrintPipeRepair()
 		cout << "Pipe is not in repair [=0]\n";
 }
 
-//void EditPipe(Pipe& pipe)
-//{
-//	cout << "Repair status will be changed, do you agree?" << endl;
-//	cout << "1. Yes" << endl;
-//	cout << "2. No" << endl;
-//	cout << "Please, enter your choice: ";
-//	switch (GetCorrectData(1, 2))
-//	{
-//	case 1:
-//	{
-//		cout << "Enter repair status: ";
-//		bool pipeRepair = GetCorrectData(false, true);;
-//		pipe.pipeRepair = pipeRepair;
-//		cout << "ID: " << pipe.Id << ": ";
-//		pipe.PrintPipeRepair();
-//		break;
-//	}
-//	case 2:
-//	{
-//		return;
-//	}
-//	default:
-//	{
-//		cout << "Please, enter the correct command!\n" << endl;
-//		break;
-//	}
-//	}
-//}
-//
-//void EditPipes(vector<Pipe*>& pipes)
-//{
-//	cout << "\nDo you want to edit repair status of the found pipes?" << endl;
-//	cout << "1. Yes" << endl;
-//	cout << "2. No" << endl;
-//	cout << "Please, enter you choice: ";
-//	switch (GetCorrectData(1, 2))
-//	{
-//	case 1:
-//	{
-//		cout << "Enter repair status for all pipes: ";
-//		bool repSt = GetCorrectData(false, true);
-//
-//		for (auto& pipe : pipes)
-//		{
-//			pipe->pipeRepair = repSt;
-//		}
-//		cout << "\nStatus has been successfully changed for all pipes!" << endl;
-//		break;
-//	}
-//	case 2:
-//		return;
-//	default:
-//		cout << "Please, enter the correct data!" << endl;
-//		break;
-//	}
-//}
+bool Pipe::ConnectionNotBusy() const
+{
+	return CSid1 < 1 || CSid2 < 1;
+}
+
+void Pipe::Connect(const int& id1, const int& id2)
+{
+	CSid1 = id1;
+	CSid2 = id2;
+}
+
+void Pipe::DeleteConnection()
+{
+	CSid1 = 0;
+	CSid2 = 0;
+}
 
 istream& operator >> (istream& in, Pipe& newPipe)
 {
@@ -95,7 +60,7 @@ istream& operator >> (istream& in, Pipe& newPipe)
 	cout << "Enter the length of the pipe (in metres): ";
 	newPipe.pipeLength = GetCorrectData(100.0, 1200.0);
 	cout << "Enter the pipe diameter (in millimetres): ";
-	newPipe.pipeDiameter = GetCorrectData(75, 1600);
+	newPipe.pipeDiameter = GetCorrectDiameter(500, 1400);
 	cout << "Enter the repair status: ";
 	newPipe.pipeRepair = GetCorrectData(0, 1);
 	return in;

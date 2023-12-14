@@ -13,4 +13,8 @@ public:
 	void EditStation(Station& station);
 	void EditStations(vector <Station*> stations);
 	void searchStation(unordered_map<int, Station>& Stations);
+	bool HasConnection(const unordered_map<int, Pipe>& Pipes, const int& CSid1, const int& CSid2);
+	void ConnectInGTS(unordered_map<int, Pipe>& Pipes, unordered_map<int, Station>& Stations);
+
+	vector<int> topologSort(unordered_map<int, Pipe>& Pipes, unordered_map<int, Station>& Stations);
 };

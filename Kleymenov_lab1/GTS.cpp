@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <queue>
 
 using namespace std;
 
@@ -277,5 +278,129 @@ void GTS::searchStation(unordered_map<int, Station>& Stations)
 	}
 }
 
+bool GTS::HasConnection(const unordered_map<int, Pipe>& Pipes, const int& CSid1, const int& CSid2)
+{
+	bool hasPipe = false;
+	for (auto& elem : Pipes)
+	{
+		if ((elem.second.CSid1 == CSid1 && elem.second.CSid2 == CSid2)
+			|| (elem.second.CSid1 == CSid2 && elem.second.CSid2 == CSid1))
+		{
+			hasPipe = true;
+		}
+	}
+	return hasPipe;
+}
 
+void GTS::ConnectInGTS(unordered_map<int, Pipe>& Pipes, unordered_map<int, Station>& Stations)
+{
+	int pipeDiameter = 0;
+	cout << "Enter pipe diameter: ";
+	pipeDiameter = GetCorrectDiameter(500, 1400);
+	int idConnectedPipe = 0;
 
+	for (auto& elem : Pipes)
+	{
+		if (elem.second.GetDiametr() == pipeDiameter && elem.second.ConnectionNotBusy())
+		{
+			idConnectedPipe = elem.first;
+			break;
+		}
+	}
+
+	Pipe* connectedPipe{};
+	if (idConnectedPipe == 0)
+	{
+		bool flag = true;
+		while (flag)
+		{
+			cout << "No pipe with this diameter!\nDo you want to add a pipe?" << endl
+				<< "1) Yes" << endl
+				<< "2) No" << endl
+				<< "Please, enter the command: ";
+			switch (GetCorrectData(1, 2))
+			{
+			case 1:
+			{
+				Pipe pipe0;
+				cin >> pipe0;
+				connectedPipe = &pipe0;
+				Pipes.insert(make_pair(connectedPipe->GetId(), *connectedPipe));
+				flag = false;
+			}
+			break;
+			case 2:
+				return;
+			default:
+				cout << "There is no such command, please, try again" << endl;
+				break;
+			}
+		}
+	}
+	else
+	{
+		connectedPipe = &Pipes[idConnectedPipe];
+	}
+
+	if (idConnectedPipe != 0)
+	{
+		cout << "Enter the ID of the first CS: ";
+		int CSid1;
+		CSid1 = GetCorrectData(1, int(Stations.size()));
+		while (Stations.find(CSid1) == Stations.end())
+		{
+			cout << "\nCS with this ID is busy! Please, try again:" << endl;
+			GetCorrectData(1, int(Stations.size()));
+		}
+
+		cout << "Enter the ID of the second CS: ";
+		int CSid2;
+		CSid2 = GetCorrectData(1, int(Stations.size()));
+		while (Stations.find(CSid2) == Stations.end() || CSid2 == CSid1 || HasConnection(Pipes, CSid1, CSid2))
+		{
+			cout << "\nCS with this ID is busy! Please, try again:" << endl;
+			GetCorrectData(1, int(Stations.size()));
+		}
+		connectedPipe->Connect(CSid1, CSid2);
+	}
+}
+
+vector<int> GTS::topologSort(unordered_map<int, Pipe>& Pipes, unordered_map<int, Station>& Stations)
+{
+	vector<int> result;
+	unordered_map<int, int> enterEdges;
+
+	for (auto& elem : Pipes)
+	{
+		enterEdges[elem.second.CSid2]++;
+	}
+
+	queue<int> que;
+	for (auto& elem : Stations)
+	{
+		if (enterEdges.find(elem.first) == enterEdges.end())
+		{
+			que.push(elem.first);
+		}
+	}
+
+	while (!que.empty())
+	{
+		int curStation = que.front();
+		que.pop();
+		result.push_back(curStation);
+
+		for (auto& elem : Pipes)
+		{
+			if (elem.second.CSid1 == curStation)
+			{
+				enterEdges[elem.second.CSid2]--;
+				if (enterEdges[elem.second.CSid2] == 0)
+				{
+					que.push(elem.second.CSid2);
+				}
+			}
+		}
+	}
+	return result;
+}
