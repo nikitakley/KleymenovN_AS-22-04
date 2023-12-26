@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <chrono>
 #include <format>
+#include <queue>
 #include "Pipe.h"
 #include "Station.h"
 #include "GTS.h"
@@ -25,6 +26,8 @@ int main()
 	unordered_map<int, Pipe> Pipes = {};
 	unordered_map<int, Station> Stations = {};
 	GTS gts;
+	vector<GTS> connection;
+
 	int num = 0;
 	while (true) {
 		cout << endl << "Menu:" << endl;
@@ -42,9 +45,11 @@ int main()
 		cout << "12) Show GTS" << endl;
 		cout << "13) Delete GTS" << endl;
 		cout << "14) Topological sort" << endl;
+		cout << "15) Find the shortest path" << endl;
+		cout << "16) Find the maximum flow" << endl;
 		cout << "0) Exit" << endl;
 		cout << endl << "Please, enter the command number: ";
-		switch (GetCorrectData(0, 14))
+		switch (GetCorrectData(0, 16))
 		{
 		case 1:
 		{
@@ -236,55 +241,29 @@ int main()
 		}
 		case 11:
 		{
+			//cout << "\n[11] Connect the pipe and CS..." << endl;
+			//if (Stations.size() < 2)
+			//	cout << "CS not enough!" << endl;
+			//else
+			//	gts.ConnectInGTS(Pipes, Stations);
 			cout << "\n[11] Connect the pipe and CS..." << endl;
-			if (Stations.size() < 2)
-				cout << "CS not enough!" << endl;
-			else
-				gts.ConnectInGTS(Pipes, Stations);
+			gts.ConnectInGTS1(Pipes, Stations, connection);
 			break;
 		}
 		case 12:
 		{
+			//cout << "\n[12] Show GTS..." << endl;
+			//gts.case12(Pipes, Stations);
 			cout << "\n[12] Show GTS..." << endl;
-			if (Pipes.size() == 0)
-				cout << "Pipes don`t exists!" << endl;
-			if (Stations.size() == 0)
-				cout << "CS don`t exists!" << endl;
-			int connectCount = 0;
-			for (const auto& elem : Pipes)
-				if (!elem.second.ConnectionNotBusy())
-				{
-					cout << "CS1 [" << elem.second.CSid1 << "] - Pipe [" << elem.first << "] - CS2 [" << elem.second.CSid2 << "]" << endl;
-					connectCount++;
-				}
-			cout << "There are " << connectCount << " connections" << endl;
+			gts.ShowGTS(connection);
 			break;
 		}
 		case 13:
 		{
+			//cout << "\n[13] Delete GTS..." << endl;
+			//gts.case13(Pipes);
 			cout << "\n[13] Delete GTS..." << endl;
-			if (Pipes.size() == 0)
-				cout << "Pipes don`t exists!" << endl;
-			else
-			{
-				cout << "Enter the ID of the pipe to delete: ";
-				int delPipe;
-				GetCorrectData(1, int(Pipes.size()));
-				while (Pipes.find(delPipe) == Pipes.end())
-				{
-					cout << "\nPipe with this ID not exist! Please, try again: ";
-					GetCorrectData(1, int(Pipes.size()));
-				}
-				if (Pipes[delPipe].ConnectionNotBusy())
-				{
-					cout << "Pipe not in GTS" << endl;
-				}
-				else
-				{
-					Pipes[delPipe].DeleteConnection();
-					cout << "Connection deleted sucecessful!" << endl;
-				}
-			}
+			gts.DeleteConnection(connection, Pipes);
 			break;
 		}
 		case 14:
@@ -297,6 +276,16 @@ int main()
 				cout << id << " ";
 			}
 			cout << endl;
+			break;
+		}
+		case 15:
+		{
+			gts.Deikstra(Pipes, connection, Stations);
+			break;
+		}
+		case 16:
+		{
+			gts.FordFulkerson(connection, Pipes, Stations);
 			break;
 		}
 		case 0:

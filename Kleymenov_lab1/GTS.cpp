@@ -5,7 +5,9 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 #include <queue>
+#include <set>
 
 using namespace std;
 
@@ -365,20 +367,447 @@ void GTS::ConnectInGTS(unordered_map<int, Pipe>& Pipes, unordered_map<int, Stati
 	}
 }
 
+void GTS::ConnectInGTS1(unordered_map<int, Pipe>& Pipes, unordered_map<int, Station>& Stations, vector<GTS>& connection)
+{
+	if (Stations.size() == 0)
+	{
+		cout << "CS not enough!";
+		return;
+	}
+	if (Pipes.size() == 0)
+	{
+		cout << "Pipes not enough!";
+		return;
+	}
+	int k = 0;
+	vector <int> free_cs;
+	for (auto& elem : Stations)
+	{
+		if (elem.second.id_in + elem.second.id_out < 2)
+		{
+			k += 1;
+			free_cs.push_back(elem.first);
+		}
+	}
+	if (k < 2)
+	{
+		cout << "You don`t have free stations!";
+		return;
+	}
+
+	int n = 0;
+	vector<int> free_pipes;
+	for (auto& elem : Pipes)
+	{
+		if (elem.second.free)
+		{
+			n += 1;
+			free_pipes.push_back(elem.first);
+		}
+	}
+	if (n < 1)
+	{
+		cout << "You don`t have free pipes!";
+		return;
+	}
+
+	GTS pipe_connect;
+	cout << "Please, enter the ID of entry CS: ";
+	cin >> pipe_connect.id_entry;
+	if (find(free_cs.begin(), free_cs.end(), pipe_connect.id_entry) == free_cs.end())
+	{
+		while (true)
+		{
+			cout << "There is no such ID, please, enter correct: ";
+			cin >> pipe_connect.id_entry;
+			if (find(free_cs.begin(), free_cs.end(), pipe_connect.id_entry) != free_cs.end())
+			{
+				Stations[pipe_connect.id_entry].id_in += 1;
+				break;
+			}
+		}
+	}
+	else
+		Stations[pipe_connect.id_entry].id_in += 1;
+
+	cout << "Please, enter the ID of outlet CS: ";
+	cin >> pipe_connect.id_out;
+	if (find(free_cs.begin(), free_cs.end(), pipe_connect.id_out) == free_cs.end() || (pipe_connect.id_out == pipe_connect.id_entry))
+	{
+		while (true)
+		{
+			cout << "There is no such ID, please, enter correct: ";
+			cin >> pipe_connect.id_out;
+			if (find(free_cs.begin(), free_cs.end(), pipe_connect.id_out) != free_cs.end() && (pipe_connect.id_out != pipe_connect.id_entry))
+			{
+				Stations[pipe_connect.id_out].id_out += 1;
+				break;
+			}
+		}
+	}
+	else
+		Stations[pipe_connect.id_out].id_out += 1;
+
+	int i = 0;
+	int pipe_diameter;
+	while (true)
+	{
+		cout << "Enter the diameter of the pipe you want to use (500, 700, 1000, 1400): ";
+		pipe_diameter = GetCorrectDiameter(500, 1400);
+		for (auto& idp : free_pipes)
+		{
+			if (Pipes[idp].pipeDiameter == pipe_diameter)
+			{
+				pipe_connect.id_pipe = idp;
+				i += 1;
+				Pipes[idp].free = 0;
+				break;
+			}
+		}
+		if (i == 1)
+		{
+			connection.push_back(pipe_connect);
+			break;
+		}
+		else
+		{
+			cout << "There is no free pipe with this diameter!";
+			int new_id_pipe = AddNewPipeConnect(Pipes, pipe_diameter);
+			pipe_connect.id_pipe = new_id_pipe;
+			Pipes[new_id_pipe].free = 0;
+			connection.push_back(pipe_connect);
+			break;
+		}
+	}
+}
+
+int GTS::AddNewPipeConnect(unordered_map<int, Pipe>& Pipes, int diameter)
+{
+	cout << "Diameter that was missing will be installed." << endl;
+	Pipe pipe;
+	cin >> pipe;
+	pipe.pipeDiameter = diameter;
+	int new_pipe_id = pipe.GetId();
+	Pipes.insert({ new_pipe_id, pipe });
+	return new_pipe_id;
+}
+
+void GTS::ShowGTS(vector<GTS>& connection)
+{
+	cout << "[CS ENTRY ID] | [PIPE ID] | [CS OUTLET ID]" << endl;
+	if (connection.size() == 0)
+	{
+		cout << "There is no connections!" << endl;
+	}
+	else
+	{
+		for (auto& elem : connection)
+		{
+			cout << "\t[" << elem.id_entry << "] \t[" << elem.id_pipe << "] \t[" << elem.id_out << "]\n";
+		}
+	}
+}
+
+void GTS::DeleteConnection(vector<GTS>& connection, unordered_map<int, Pipe>& Pipes)
+{
+	cout << "Please, enter the ID of the pipe to remove the connection from: ";
+	int idp = GetCorrectData(1, int(Pipes.size()));
+	for (auto it = connection.begin(); it != connection.end();)
+	{
+		if (it->id_pipe == idp)
+		{
+			it = connection.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+}
+
+void GTS::case12(unordered_map<int, Pipe>& Pipes, unordered_map<int, Station>& Stations)
+{
+	if (Pipes.size() == 0)
+		cout << "Pipes don`t exists!" << endl;
+	if (Stations.size() == 0)
+		cout << "CS don`t exists!" << endl;
+	int connectCount = 0;
+	for (const auto& elem : Pipes)
+		if (!elem.second.ConnectionNotBusy())
+		{
+			cout << "CS1 [" << elem.second.CSid1 << "] - Pipe [" << elem.first << "] - CS2 [" << elem.second.CSid2 << "]" << endl;
+			connectCount++;
+		}
+	cout << "There are " << connectCount << " connections" << endl;
+}
+
+void GTS::case13(unordered_map<int, Pipe>& Pipes)
+{
+	if (Pipes.size() == 0)
+		cout << "Pipes don`t exists!" << endl;
+	else
+	{
+		cout << "Enter the ID of the pipe to delete: ";
+		int delPipe;
+		delPipe = GetCorrectData(1, int(Pipes.size()));
+		while (Pipes.find(delPipe) == Pipes.end())
+		{
+			cout << "\nPipe with this ID not exist! Please, try again: ";
+			GetCorrectData(1, int(Pipes.size()));
+		}
+		if (Pipes[delPipe].ConnectionNotBusy())
+		{
+			cout << "Pipe not in GTS" << endl;
+		}
+		else
+		{
+			Pipes[delPipe].DeleteConnection();
+			cout << "Connection deleted sucecessful!" << endl;
+		}
+	}
+}
+
+void GTS::Deikstra(unordered_map<int, Pipe>& Pipes, vector<GTS>& graph, unordered_map<int, Station>& Stations)
+{
+	if (graph.size() == 0)
+	{
+		cout << "You have no connection!" << endl;
+		return;
+	}
+
+	int maxel = 0;
+	int minel = Stations[0].maxId;
+
+	set<int> vertexes;
+	for (auto& edge : graph)
+	{
+		vertexes.insert(edge.id_entry);
+		vertexes.insert(edge.id_out);
+		if (edge.id_entry > maxel)
+		{
+			maxel = edge.id_entry;
+		}
+		if (edge.id_entry < minel)
+		{
+			minel = edge.id_entry;
+		}
+		if (edge.id_out > maxel)
+		{
+			maxel = edge.id_out;
+		}
+		if (edge.id_out < minel)
+		{
+			minel = edge.id_out;
+		}
+	}
+
+	int start_vertex;
+	int end_vertex;
+
+	cout << "Enter the ID of CS from which you want to find the shortest path: ";
+	start_vertex = GetCorrectData(minel, maxel);
+	if (find(vertexes.begin(), vertexes.end(), start_vertex) == vertexes.end())
+	{
+		while (true)
+		{
+			cout << "There is no such ID, please enter correct: ";
+			cin >> start_vertex;
+			if (find(vertexes.begin(), vertexes.end(), start_vertex) != vertexes.end())
+			{
+				break;
+			}
+		}
+	}
+
+	cout << "Enter the ID of CS you want to find the shortest path to: ";
+	end_vertex = GetCorrectData(minel, maxel);
+	if (find(vertexes.begin(), vertexes.end(), end_vertex) == vertexes.end())
+	{
+		while (true)
+		{
+			cout << "There is no such ID, please enter correct: ";
+			cin >> end_vertex;
+			if (find(vertexes.begin(), vertexes.end(), start_vertex) != vertexes.end())
+			{
+				break;
+			}
+		}
+	}
+
+	for (const auto& vertex : vertexes) {
+		Stations[vertex].shortest_path = numeric_limits<int>::max();
+	}
+
+	Stations[start_vertex].shortest_path = 0;
+
+	priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
+	pq.push({ 0, start_vertex });
+
+	while (!pq.empty()) {
+		int current_vertex = pq.top().second;
+		int current_distance = pq.top().first;
+		pq.pop();
+
+		if (current_vertex == end_vertex) {
+			break;
+		}
+
+		for (const auto& edge : graph) {
+			if (edge.id_entry == current_vertex) {
+				int neighbor_vertex = edge.id_out;
+				const Pipe& truba = Pipes[edge.id_pipe];
+				int new_distance = current_distance + truba.pipeLength;
+
+				if (new_distance < Stations[neighbor_vertex].shortest_path) {
+					Stations[neighbor_vertex].shortest_path = new_distance;
+					pq.push({ new_distance, neighbor_vertex });
+				}
+			}
+		}
+	}
+	if (Stations[end_vertex].shortest_path == numeric_limits<int>::max())
+	{
+		cout << "There is no path from " << start_vertex << " to " << end_vertex << "." << endl;
+	}
+	else
+	{
+		cout << "Shortest path from " << start_vertex << " to " << end_vertex << ": " << Stations[end_vertex].shortest_path << endl;
+	}
+}
+
+bool BFS(vector<vector<int>>& rGraph, int s, int t, vector<int>& parent)
+{
+	int V = rGraph.size();
+	vector<bool> visited(V, false);
+
+	queue<int> q;
+	q.push(s);
+	visited[s] = true;
+	parent[s] = -1;
+
+	while (!q.empty())
+	{
+		int u = q.front();
+		q.pop();
+
+		for (int v = 0; v < V; v++)
+		{
+			if (visited[v] == false && rGraph[u][v] > 0)
+			{
+				q.push(v);
+				parent[v] = u;
+				visited[v] = true;
+			}
+		}
+	}
+
+	return (visited[t] == true);
+}
+
+void GTS::FordFulkerson(vector<GTS>& graph, unordered_map<int, Pipe>& Pipes, unordered_map<int, Station>& Stations)
+{
+	if (graph.size() == 0)
+	{
+		cout << "You have no connections!" << endl;
+		return;
+	}
+
+	int maxel = 0;
+	int minel = Stations[0].maxId;
+
+	set<int>vertexes;
+	for (auto& edge : graph)
+	{
+		vertexes.insert(edge.id_entry);
+		vertexes.insert(edge.id_out);
+		if (edge.id_entry > maxel)
+		{
+			maxel = edge.id_entry;
+		}
+		if (edge.id_entry < minel)
+		{
+			minel = edge.id_entry;
+		}
+		if (edge.id_out > maxel)
+		{
+			maxel = edge.id_out;
+		}
+		if (edge.id_out < minel)
+		{
+			minel = edge.id_out;
+		}
+	}
+
+	int s;
+	cout << "Enter the vertex-source: ";
+	s = GetCorrectData(minel, maxel);
+	cout << "Enter the vertex-sink: ";
+	int t;
+	t = GetCorrectData(minel, maxel);
+
+	if (s == t)
+	{
+		while (true)
+		{
+			cout << "Source and sink must not be the same number!" << endl;
+			t = GetCorrectData(minel, maxel);
+			if (s != t) {
+				break;
+			}
+		}
+
+	}
+	int V = Stations.size();
+	vector<vector<int>> RGraph(V, vector<int>(V, 0));
+	for (const GTS& edge : graph) {
+		RGraph[edge.id_entry][edge.id_out] = Pipes[edge.id_pipe].pipeLength;
+	}
+
+	vector<int> parent(V, -1);
+	int maxFlow = 0;
+
+	while (BFS(RGraph, s, t, parent))
+	{
+		int pathFlow = INT_MAX;
+		for (int v = t; v != s; v = parent[v])
+		{
+			int u = parent[v];
+			pathFlow = min(pathFlow, RGraph[u][v]);
+		}
+
+		for (int v = t; v != s; v = parent[v])
+		{
+			int u = parent[v];
+			RGraph[u][v] -= pathFlow;
+			RGraph[v][u] += pathFlow;
+		}
+
+		maxFlow += pathFlow;
+	}
+	cout << "Maximum flow: " << maxFlow << endl;
+}
+
 vector<int> GTS::topologSort(unordered_map<int, Pipe>& Pipes, unordered_map<int, Station>& Stations)
 {
 	vector<int> result;
 	unordered_map<int, int> enterEdges;
+	unordered_map<int, int> outEdges;
 
 	for (auto& elem : Pipes)
 	{
-		enterEdges[elem.second.CSid2]++;
+		if (elem.second.CSid2 != 0)
+			enterEdges[elem.second.CSid2]++;
+	}
+	for (auto& elem : Pipes)
+	{
+		if (elem.second.CSid1 != 0)
+			outEdges[elem.second.CSid1]++;
 	}
 
 	queue<int> que;
 	for (auto& elem : Stations)
 	{
-		if (enterEdges.find(elem.first) == enterEdges.end())
+		if (enterEdges.find(elem.first) == enterEdges.end() && outEdges.find(elem.first) != outEdges.end())
 		{
 			que.push(elem.first);
 		}
@@ -392,7 +821,7 @@ vector<int> GTS::topologSort(unordered_map<int, Pipe>& Pipes, unordered_map<int,
 
 		for (auto& elem : Pipes)
 		{
-			if (elem.second.CSid1 == curStation)
+			if (elem.second.CSid1 == curStation && elem.second.CSid1 != 0)
 			{
 				enterEdges[elem.second.CSid2]--;
 				if (enterEdges[elem.second.CSid2] == 0)
@@ -404,3 +833,4 @@ vector<int> GTS::topologSort(unordered_map<int, Pipe>& Pipes, unordered_map<int,
 	}
 	return result;
 }
+

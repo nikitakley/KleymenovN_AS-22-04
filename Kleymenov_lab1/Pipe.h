@@ -16,6 +16,7 @@ public:
 	bool pipeRepair = false;
 	int CSid1 = 0;
 	int CSid2 = 0;
+	bool free = 1;
 
 	int GetId();
 	int GetDiametr() const;

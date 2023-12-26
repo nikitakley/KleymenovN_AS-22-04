@@ -14,6 +14,10 @@ public:
 	int stationActWorkshops = 0;
 	double stationEfficiency = 0.0;
 
+	int id_in = 0;
+	int id_out = 0;
+	int shortest_path;
+
 	int GetId();
 	string GetName() const;
 	int GetWorkshops() const;
